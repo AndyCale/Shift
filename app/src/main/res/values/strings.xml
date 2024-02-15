@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Shift</string>
-    <string name="text_loading">loading...</string>
+    <string name="text_loading">Загрузка...</string>
     <string name="head_title">Несуществующие люди</string>
     <string name="update">Обновить список</string>
+    <string name="picture_load">Загрузка картинки</string>
 </resources>
