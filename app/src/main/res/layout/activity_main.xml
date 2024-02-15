@@ -7,12 +7,12 @@
     android:orientation="vertical"
     android:background="@drawable/background">
 
-    <TextView
-        android:id="@+id/header_title"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/head_title"
-        style="@style/briedInform"/>
+        android:contentDescription="TODO">
+
+    </ImageView>
 
     <TextView
         android:id="@+id/tv1"
@@ -50,7 +50,7 @@
         style="@style/briedInform"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_update"
+        android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

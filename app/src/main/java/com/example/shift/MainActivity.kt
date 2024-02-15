@@ -1,8 +1,11 @@
 package com.example.shift
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.shift.databinding.ActivityMainBinding
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding
         get() = _binding ?: throw IllegalStateException("Binding in Main Activity must not be null")
 
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,34 +35,76 @@ class MainActivity : AppCompatActivity() {
             tv1.setOnClickListener {
                 fullInform(1)
             }
+            tv2.setOnClickListener {
+                fullInform(2)
+            }
+            tv3.setOnClickListener {
+                fullInform(3)
+            }
+            tv4.setOnClickListener {
+                fullInform(4)
+            }
+            tv5.setOnClickListener {
+                fullInform(5)
+            }
+            btnUpdate.setOnClickListener {
+                btnUpdate.isEnabled = false
+                new_people()
+                btnUpdate.isEnabled = true
+            }
         }
 
-        pep {
-            binding.tv1.text = it
+        if (true) {
+            new_people()
         }
     }
 
-    fun fullInform(number : Int) {
+    private fun fullInform(number : Int) {
         val intent = Intent(this@MainActivity, FullInformation::class.java)
         intent.putExtra(FullInformation.number, 1)
         startActivity(intent)
     }
 
-    private fun createNewPeople() : String {
-        val request : ExecutorService = Executors.newFixedThreadPool(1)
-        val result = request.submit(Callable<String> {
-            var now = JSONObject(URL("https://randomuser.me/api/").readText())
-            now = now.getJSONArray("result")[0] as JSONObject
-            now.getJSONObject("name").getString("first")
-        })
-        return result.toString()
-    }
+    private fun new_people() {
 
-    private fun pep(callback : (String) -> Unit) {
-        thread {
-            var now = JSONObject(URL("https://randomuser.me/api/").readText())
-            now = now.getJSONArray("results")[0] as JSONObject
-            callback.invoke(now.getJSONObject("name").getString("first"))
+        var inform: String = ""
+        getInfo {
+            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}";
+            binding.tv1.text = inform
+        }
+        // Phone: ${it[4]}
+        getInfo {
+            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}";
+            binding.tv2.text = inform
+        }
+
+        getInfo {
+            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}";
+            binding.tv3.text = inform
+        }
+
+        getInfo {
+            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}";
+            binding.tv4.text = inform
+        }
+
+        getInfo {
+            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}";
+            binding.tv5.text = inform
         }
     }
-}
+
+    private fun getInfo(callback : (List<String>) -> Unit) {
+        thread {
+            var request = JSONObject(URL("https://randomuser.me/api/").readText())
+            request = request.getJSONArray("results")[0] as JSONObject
+            val name = request.getJSONObject("name")
+            val address = request.getJSONObject("location").getJSONObject("street")
+            handler.post {
+                callback.invoke(listOf(name.getString("first"), name.getString("last"),
+                    address.getString("name"), address.getString("number"),
+                            request.getString("phone")))
+            }
+        }
+    }
+    }
