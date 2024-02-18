@@ -50,13 +50,8 @@ interface InfoPeopleDao {
     fun deleteInfoPeopleData()
     @Query("SELECT count(*) FROM infoPeople")
     fun countDB(): Int
-
-    /*
-    @Query("SELECT * FROM TABLE WHERE id = \$idPeople")
+    @Query("SELECT * FROM infoPeople WHERE id = :idPeople")
     fun getById(idPeople : Int): InfoPeopleEntity
-
-     */
-
 }
 
 

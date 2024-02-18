@@ -25,9 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    public lateinit var db: InfoPeopleDB
-
-    public var r = 1
+    private lateinit var db: InfoPeopleDB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,9 +88,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fullInform(number : Int) {
-        val intent = Intent(this@MainActivity, FullInformation::class.java)
-        intent.putExtra(FullInformation.number, 1)
-        startActivity(intent)
+        var inform : Array<String>
+        getInfoSelectedPeople(number - 1) {
+            inform = it
+            val intent = Intent(this@MainActivity, FullInformation::class.java)
+            intent.putExtra(FullInformation.number, inform)
+            startActivity(intent)
+        }
     }
 
     private fun new_people() {
@@ -129,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getInfo(callback : (List<String>) -> Unit) {
+    private fun getInfo(callback : (Array<String>) -> Unit) {
         thread {
             var flag = false
             while (!flag) {
@@ -158,11 +160,11 @@ class MainActivity : AppCompatActivity() {
                     val dob = request.getJSONObject("dob").getString("date")
                     val age = request.getJSONObject("dob").getString("age")
 
-                    addToDB(listOf(title, name, lastname, gender, country, city, street, numHome,
+                    addToDB(arrayOf(title, name, lastname, gender, country, city, street, numHome,
                         offset, phone, email, postcode, dob, age, pic))
 
                     handler.post {
-                        callback.invoke(listOf(name, lastname, street, numHome, phone, pic))
+                        callback.invoke(arrayOf(name, lastname, street, numHome, phone, pic))
                     }
                 } catch (err: java.io.FileNotFoundException) {
                     Log.i(TAG, "FileNotFoundException")
@@ -171,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addToDB(info : List<String>) {
+    private fun addToDB(info : Array<String>) {
         val people = InfoPeopleEntity(0, info[0], info[1], info[2], info[3], info[4], info[5],
             info[6], info[7].toInt(), info[8], info[9], info[10], info[11], info[12],
             info[13].toInt(), info[14])
@@ -225,7 +227,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getInfoSelectedPeople() {
-
+    private fun getInfoSelectedPeople(number : Int, callback : (Array<String>) -> Unit)  {
+        thread {
+            val people = db.getInfoPeopleDao().getAllInfoPeople()[number]
+            val name = "Name: ${people.title} ${people.name} ${people.lastname}"
+            val info = "Gender: ${people.gender}\n\n" +
+                    "Address: ${people.country}, ${people.city}, ${people.street} ${people.numHome}\n\n" +
+                    "Time zone: ${people.offset}\n\n" +
+                    "Phone: ${people.phone}\n\n" +
+                    "Email: ${people.email}\n\n" +
+                    "Postcode: ${people.postcode}\n\n" +
+                    "Day of Birthday: ${people.dob}\n\n" +
+                    "Age: ${people.age}"
+            handler.post {
+                callback.invoke(arrayOf(name, info, people.pic))
+            }
+        }
     }
 }

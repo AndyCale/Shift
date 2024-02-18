@@ -1,11 +1,14 @@
 package com.example.shift
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.shift.FullInformation.Companion.number
 import com.example.shift.databinding.ActivityFullInformationBinding
 import com.example.shift.databinding.ActivityMainBinding
 import kotlin.concurrent.thread
 import com.example.shift.MainActivity
+import com.squareup.picasso.Picasso
 
 class FullInformation : AppCompatActivity() {
 
@@ -23,12 +26,20 @@ class FullInformation : AppCompatActivity() {
         _binding = ActivityFullInformationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val number = getNumber()
+        if (number != null) {
+            binding.nameInFullInfo.text = number[0]
+            binding.fullInfo.text = number[1]
+            Picasso.get().load(number[2]).into(binding.imgInFullInfo)
+        }
 
-
+        binding.btnBack.setOnClickListener{
+            val intent = Intent(this@FullInformation, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    fun getNumber() : Int {
-        val numPeople = intent.getIntExtra(number, 0)
+    fun getNumber() : Array<out String>? {
+        val numPeople = intent.getStringArrayExtra(number)
         return numPeople
     }
 }

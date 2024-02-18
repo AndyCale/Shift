@@ -4,4 +4,5 @@
     <string name="head_title">Несуществующие люди</string>
     <string name="update">Обновить список</string>
     <string name="picture_load">Загрузка картинки</string>
+    <string name="back">Назад</string>
 </resources>
