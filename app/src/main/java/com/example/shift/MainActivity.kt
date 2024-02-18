@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var db: InfoPeopleDB
 
-    private var idList = Array<Int>(5) { -1 }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -67,9 +65,8 @@ class MainActivity : AppCompatActivity() {
 
                 Thread {
                     db.getInfoPeopleDao().deleteInfoPeopleData()
-
                 }.start()
-                new_people()
+                newPeople()
             }
         }
 
@@ -77,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             val countStr = db.getInfoPeopleDao().countDB()
 
             if (countStr == 0) { // если база данных пустая
-                new_people()
+                newPeople()
             }
             else { // если не пустая
                 loadFromDBInfo() {
@@ -101,8 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun new_people() {
-
+    private fun newPeople() {
         var inform: String = ""
         getInfo {
             inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
@@ -164,6 +160,7 @@ class MainActivity : AppCompatActivity() {
                     val dob = request.getJSONObject("dob").getString("date")
                     val age = request.getJSONObject("dob").getString("age")
 
+
                     addToDB(arrayOf(title, name, lastname, gender, country, city, street, numHome,
                         offset, phone, email, postcode, dob, age, pic))
 
@@ -194,14 +191,6 @@ class MainActivity : AppCompatActivity() {
             var listPic = emptyList<String>()
             val peoples = db.getInfoPeopleDao().getAllInfoPeople()
             var people = peoples[0]
-            idList[0] = peoples[0].id
-            idList[1] = peoples[1].id
-            idList[2] = peoples[2].id
-            idList[3] = peoples[3].id
-            idList[4] = peoples[4].id
-            binding.tv1.text = peoples[0].id.toString() + " " + peoples[1].id.toString() + " " +
-                    peoples[2].id.toString() + " " + peoples[3].id.toString() + " " + peoples[0].id.toString()
-
 
             with(binding) {
                 tv1.text = "Name: ${people.name} ${people.lastname}\n" +
