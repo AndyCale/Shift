@@ -1,20 +1,177 @@
 package com.example.shift.db
 
-import android.provider.BaseColumns
+import android.content.Context
+import androidx.room.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-object dbNameClass : BaseColumns {
-    const val TABLE_NAME = "table"
-    const val COLUMN_NAME_NAME = "name"
-    const val COLUMN_NAME_TITLE = "title"
-    const val COLUMN_NAME_PHONE = "phone"
-    const val COLUMN_NAME_EMAIL = "email"
-    const val COLUMN_NAME_ADDRESS = "address"
-    const val COLUMN_NAME_GENDER = "gender"
-    const val COLUMN_NAME_DOB = "dob"
-    const val COLUMN_NAME_AGE = "age"
-    const val COLUMN_NAME_PICTURE = "picture"
-    const val COLUMN_NAME_POSTCODE = "postcode"
-    const val COLUMN_NAME_COORDINATES = "coordinates"
-    const val COLUMN_NAME_OFFSET = "offset"
-    const val COLUMN_NAME_USERNAME = "username"
+@Database(entities = [InfoPeopleEntity::class], version = 1)
+abstract class InfoPeopleDB : RoomDatabase() {
+
+    abstract fun getInfoPeopleDao(): InfoPeopleDao
+    companion object{
+        fun getInfoPeopleDB(context: Context): InfoPeopleDB { //создается база данных, если еще не создана
+            return Room.databaseBuilder(            // возвращается база данных
+                context.applicationContext,
+                InfoPeopleDB::class.java,
+                "info.db"
+            ).build()
+        }
+    }
 }
+
+@Entity (tableName = "infoPeople")
+data class InfoPeopleEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    val title: String,
+    val name: String,
+    val lastname: String,
+    val gender: String,
+    val country: String,
+    val city: String,
+    val street: String,
+    val numHome: Int,
+    val offset: String,
+    val phone: String,
+    val email: String,
+    val postcode: String,
+    val dob: String,
+    val age: Int,
+    val pic: String
+)
+
+@Dao
+interface InfoPeopleDao {
+    @Insert
+    fun insertInfoPeople(info: InfoPeopleEntity)
+    @Query("SELECT * FROM infoPeople ORDER BY id")
+    fun getAllInfoPeople(): List<InfoPeopleEntity>
+    @Query("DELETE FROM infoPeople")
+    fun deleteInfoPeopleData()
+    @Query("SELECT count(*) FROM infoPeople")
+    fun countDB(): Int
+
+    /*
+    @Query("SELECT * FROM TABLE WHERE id = \$idPeople")
+    fun getById(idPeople : Int): InfoPeopleEntity
+
+     */
+
+}
+
+
+/*
+@Entity(
+    tableName = "infoPeople",
+    indices = [Index("id")])
+data class InfoPeopleDBEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    val title: String,
+    val name: String,
+    val lastname: String,
+    val gender: String,
+    val country: String,
+    val city: String,
+    val street: String,
+    val numHome: Int,
+    val offset: String,
+    val phone: String,
+    val email: String,
+    val postcode: String,
+    val dob: String,
+    val age: Int,
+    val pic: String
+)
+
+@Dao
+interface InfoPeopleDao {
+    @Insert(entity = InfoPeopleDBEntity::class)
+    fun insertNewInfoPeopleData(info: InfoPeopleDBEntity)
+
+    @Query("SELECT * FROM infoPeople")
+    fun getAllInfoPeopleData() : List<InfoPeopleDBEntity>
+
+    @Query("DELETE FROM infoPeople")
+    fun deleteInfoPeopleData()
+
+    object Dependencies {
+        private lateinit var applicationContext: Context
+
+        fun init(context: Context) {
+            applicationContext = context
+        }
+
+        private val appDatabase: AppDatabasa by lazy {
+            Room.databaseBuilder(applicationContext, AppDatabasa::class.java, "database.db")
+                .createFromAsset("room_article.db").build()
+        }
+    }
+}
+
+@Database(
+    version = 1,
+    entities = [InfoPeopleDBEntity::class]
+)
+abstract  class AppDatabasa : RoomDatabase() {
+    abstract fun getInfoPeopleDao() : InfoPeopleDao
+}
+
+data class InfoPeople(
+    val id: Int,
+    val title: String,
+    val name: String,
+    val lastname: String,
+    val gender: String,
+    val country: String,
+    val city: String,
+    val street: String,
+    val numHome: Int,
+    val offset: String,
+    val phone: String,
+    val email: String,
+    val postcode: String,
+    val dob: String,
+    val age: Int,
+    val pic: String
+) {
+    fun toInfoPeopleDBEntity() : InfoPeopleDBEntity = InfoPeopleDBEntity(
+        id = 0,
+        title = title,
+        name = name,
+        lastname = lastname,
+        gender = gender,
+        country = country,
+        city = city,
+        street = street,
+        numHome = numHome,
+        offset = offset,
+        phone = phone,
+        email = email,
+        postcode = postcode,
+        dob = dob,
+        age = age,
+        pic = pic
+    )
+}
+
+class InfoPeopleRepository(private val InfoPeopleDao : InfoPeopleDao) {
+
+    suspend fun insertNewInfoPeopleData(InfoPeopleDBEntity : InfoPeopleDBEntity) {
+        withContext(Dispatchers.IO) {
+            InfoPeopleDao.insertNewInfoPeopleData(InfoPeopleDBEntity)
+        }
+    }
+
+    suspend fun getAllInfoPeopleData() : List<InfoPeopleDBEntity> {
+        return withContext(Dispatchers.IO) {
+            return@withContext InfoPeopleDao.getAllInfoPeopleData()
+        }
+    }
+
+    suspend fun removeInfoPeopleData() {
+        withContext(Dispatchers.IO) {
+            InfoPeopleDao.deleteInfoPeopleData()
+        }
+    }
+}
+*/

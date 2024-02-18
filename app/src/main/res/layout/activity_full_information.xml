@@ -4,6 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FullInformation">
+    tools:context=".FullInformation"
+    android:background="@drawable/background">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:background="@drawable/shape_background_brief"
+        android:text="@string/text_loading"
+        >
+
+    </TextView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
