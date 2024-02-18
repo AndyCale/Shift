@@ -27,11 +27,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var db: InfoPeopleDB
 
+    private var idList = Array<Int>(5) { -1 }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         db = InfoPeopleDB.getInfoPeopleDB(this)
+
+
 
         with(binding) {
             tv1.setOnClickListener {
@@ -166,6 +170,7 @@ class MainActivity : AppCompatActivity() {
                     handler.post {
                         callback.invoke(arrayOf(name, lastname, street, numHome, phone, pic))
                     }
+
                 } catch (err: java.io.FileNotFoundException) {
                     Log.i(TAG, "FileNotFoundException")
                 }
@@ -178,12 +183,9 @@ class MainActivity : AppCompatActivity() {
             info[6], info[7].toInt(), info[8], info[9], info[10], info[11], info[12],
             info[13].toInt(), info[14])
 
-
         Thread {
             db.getInfoPeopleDao().insertInfoPeople(people)
         }.start()
-
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -192,6 +194,14 @@ class MainActivity : AppCompatActivity() {
             var listPic = emptyList<String>()
             val peoples = db.getInfoPeopleDao().getAllInfoPeople()
             var people = peoples[0]
+            idList[0] = peoples[0].id
+            idList[1] = peoples[1].id
+            idList[2] = peoples[2].id
+            idList[3] = peoples[3].id
+            idList[4] = peoples[4].id
+            binding.tv1.text = peoples[0].id.toString() + " " + peoples[1].id.toString() + " " +
+                    peoples[2].id.toString() + " " + peoples[3].id.toString() + " " + peoples[0].id.toString()
+
 
             with(binding) {
                 tv1.text = "Name: ${people.name} ${people.lastname}\n" +
