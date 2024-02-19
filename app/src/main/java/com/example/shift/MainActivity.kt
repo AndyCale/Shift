@@ -116,78 +116,78 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun newPeople() {
-        var inform: String = ""
-        getInfo {
-            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
-            binding.tv1.text = inform
-            Picasso.get().load(it[5]).into(binding.imgV1)
-        }
+        thread {
+            var inform: String = ""
+            getInfo {
+                inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
+                binding.tv1.text = inform
+                Picasso.get().load(it[5]).into(binding.imgV1)
+            }
 
-        getInfo {
-            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
-            binding.tv2.text = inform
-            Picasso.get().load(it[5]).into(binding.imgV2)
-        }
+            getInfo {
+                inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
+                binding.tv2.text = inform
+                Picasso.get().load(it[5]).into(binding.imgV2)
+            }
 
-        getInfo {
-            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
-            binding.tv3.text = inform
-            Picasso.get().load(it[5]).into(binding.imgV3)
-        }
+            getInfo {
+                inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
+                binding.tv3.text = inform
+                Picasso.get().load(it[5]).into(binding.imgV3)
+            }
 
-        getInfo {
-            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
-            binding.tv4.text = inform
-            Picasso.get().load(it[5]).into(binding.imgV4)
-        }
+            getInfo {
+                inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
+                binding.tv4.text = inform
+                Picasso.get().load(it[5]).into(binding.imgV4)
+            }
 
-        getInfo {
-            inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
-            binding.tv5.text = inform
-            Picasso.get().load(it[5]).into(binding.imgV5)
+            getInfo {
+                inform = "Name: ${it[0]} ${it[1]}\nAddress: ${it[2]} ${it[3]}\nPhone: ${it[4]}"
+                binding.tv5.text = inform
+                Picasso.get().load(it[5]).into(binding.imgV5)
+            }
         }
     }
 
     private fun getInfo(callback : (Array<String>) -> Unit) {
-        thread {
-            var flag = false
-            while (!flag) {
-                try {
-                    var request = JSONObject(URL("https://randomuser.me/api/").readText())
-                    flag = true
-                    request = request.getJSONArray("results")[0] as JSONObject
-                    val name = request.getJSONObject("name").getString("first")
-                    val lastname = request.getJSONObject("name").getString("last")
-                    val street = request.getJSONObject("location").
-                    getJSONObject("street").getString("name")
-                    val numHome = request.getJSONObject("location").
-                    getJSONObject("street").getString("number")
-                    val pic = request.getJSONObject("picture").getString("medium")
-                    val phone = request.getString("phone")
+        var flag = false
+        while (!flag) {
+            try {
+                var request = JSONObject(URL("https://randomuser.me/api/").readText())
+                flag = true
+                request = request.getJSONArray("results")[0] as JSONObject
+                val name = request.getJSONObject("name").getString("first")
+                val lastname = request.getJSONObject("name").getString("last")
+                val street = request.getJSONObject("location").
+                getJSONObject("street").getString("name")
+                val numHome = request.getJSONObject("location").
+                getJSONObject("street").getString("number")
+                val pic = request.getJSONObject("picture").getString("medium")
+                val phone = request.getString("phone")
 
-                    val gender = request.getString("gender")
-                    val title = request.getJSONObject("name").getString("title")
-                    val country = request.getJSONObject("location").getString("country")
-                    val city = request.getJSONObject("location").getString("city")
-                    val postcode = request.getJSONObject("location").
-                    getString("postcode")
-                    val email = request.getString("email")
-                    val offset = request.getJSONObject("location").
-                    getJSONObject("timezone").getString("offset")
-                    val dob = request.getJSONObject("dob").getString("date")
-                    val age = request.getJSONObject("dob").getString("age")
+                val gender = request.getString("gender")
+                val title = request.getJSONObject("name").getString("title")
+                val country = request.getJSONObject("location").getString("country")
+                val city = request.getJSONObject("location").getString("city")
+                val postcode = request.getJSONObject("location").
+                getString("postcode")
+                val email = request.getString("email")
+                val offset = request.getJSONObject("location").
+                getJSONObject("timezone").getString("offset")
+                val dob = request.getJSONObject("dob").getString("date")
+                val age = request.getJSONObject("dob").getString("age")
 
-                    addToDB(arrayOf(title, name, lastname, gender, country, city, street, numHome,
-                        offset, phone, email, postcode, dob, age, pic))
+                addToDB(arrayOf(title, name, lastname, gender, country, city, street, numHome,
+                    offset, phone, email, postcode, dob, age, pic))
 
-                    handler.post {
-                        callback.invoke(arrayOf(name, lastname, street, numHome, phone, pic))
-                    }
-
-                } catch (err: java.io.FileNotFoundException) {
-                    showToast("Ошибка получения данных с сайта")
-                    Log.i(TAG, "FileNotFoundException")
+                handler.post {
+                    callback.invoke(arrayOf(name, lastname, street, numHome, phone, pic))
                 }
+
+            } catch (err: java.io.FileNotFoundException) {
+                showToast("Ошибка получения данных с сайта")
+                Log.i(TAG, "FileNotFoundException")
             }
         }
     }
@@ -196,17 +196,15 @@ class MainActivity : AppCompatActivity() {
             info[6], info[7].toInt(), info[8], info[9], info[10], info[11], info[12],
             info[13].toInt(), info[14])
 
-        Thread {
+        thread {
             db.getInfoPeopleDao().insertInfoPeople(people)
-        }.start()
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun loadFromDBInfo(callback : (List<String>) -> Unit) {
         thread {
             try {
-
-
                 var listPic = emptyList<String>()
                 val peoples = db.getInfoPeopleDao().getAllInfoPeople()
                 var people = peoples[0]

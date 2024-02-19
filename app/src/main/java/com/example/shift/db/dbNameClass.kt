@@ -44,7 +44,7 @@ data class InfoPeopleEntity(
 interface InfoPeopleDao {
     @Insert
     fun insertInfoPeople(info: InfoPeopleEntity)
-    @Query("SELECT * FROM infoPeople ORDER BY id")
+    @Query("SELECT * FROM infoPeople")
     fun getAllInfoPeople(): List<InfoPeopleEntity>
     @Query("DELETE FROM infoPeople")
     fun deleteInfoPeopleData()
