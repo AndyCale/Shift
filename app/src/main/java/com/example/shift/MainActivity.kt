@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.shift.databinding.ActivityMainBinding
 import com.example.shift.db.InfoPeopleDB
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var db: InfoPeopleDB
 
+    private var backPressedTime: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -36,19 +39,19 @@ class MainActivity : AppCompatActivity() {
 
 
         with(binding) {
-            tv1.setOnClickListener {
+            people1.setOnClickListener {
                 fullInform(1)
             }
-            tv2.setOnClickListener {
+            people2.setOnClickListener {
                 fullInform(2)
             }
-            tv3.setOnClickListener {
+            people3.setOnClickListener {
                 fullInform(3)
             }
-            tv4.setOnClickListener {
+            people4.setOnClickListener {
                 fullInform(4)
             }
-            tv5.setOnClickListener {
+            people5.setOnClickListener {
                 fullInform(5)
             }
             btnUpdate.setOnClickListener {
@@ -63,20 +66,21 @@ class MainActivity : AppCompatActivity() {
                 imgV4.setImageResource(R.drawable.pic_loading)
                 imgV5.setImageResource(R.drawable.pic_loading)
 
-                Thread {
+                thread {
                     db.getInfoPeopleDao().deleteInfoPeopleData()
-                }.start()
+                }
                 newPeople()
             }
         }
 
-        Thread {
+        thread {
             val countStr = db.getInfoPeopleDao().countDB()
 
             if (countStr == 0) { // если база данных пустая
                 newPeople()
             }
             else { // если не пустая
+
                 loadFromDBInfo() {
                     Picasso.get().load(it[0]).into(binding.imgV1)
                     Picasso.get().load(it[1]).into(binding.imgV2)
@@ -84,8 +88,21 @@ class MainActivity : AppCompatActivity() {
                     Picasso.get().load(it[3]).into(binding.imgV4)
                     Picasso.get().load(it[4]).into(binding.imgV5)
                 }
+
+
             }
-        }.start()
+        }
+    }
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (backPressedTime + 3000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+            finish()
+        }
+        else {
+            backPressedTime = System.currentTimeMillis()
+            Toast.makeText(this, "Нажмите еще раз для выхода", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun fullInform(number : Int) {
@@ -160,7 +177,6 @@ class MainActivity : AppCompatActivity() {
                     val dob = request.getJSONObject("dob").getString("date")
                     val age = request.getJSONObject("dob").getString("age")
 
-
                     addToDB(arrayOf(title, name, lastname, gender, country, city, street, numHome,
                         offset, phone, email, postcode, dob, age, pic))
 
@@ -169,12 +185,13 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 } catch (err: java.io.FileNotFoundException) {
+                    //Toast.makeText(this, "Ошибка загрузки данных с сайта",
+                    //    Toast.LENGTH_SHORT).show()
                     Log.i(TAG, "FileNotFoundException")
                 }
             }
         }
     }
-
     private fun addToDB(info : Array<String>) {
         val people = InfoPeopleEntity(0, info[0], info[1], info[2], info[3], info[4], info[5],
             info[6], info[7].toInt(), info[8], info[9], info[10], info[11], info[12],
@@ -188,41 +205,48 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun loadFromDBInfo(callback : (List<String>) -> Unit) {
         thread {
-            var listPic = emptyList<String>()
-            val peoples = db.getInfoPeopleDao().getAllInfoPeople()
-            var people = peoples[0]
+            try {
 
-            with(binding) {
-                tv1.text = "Name: ${people.name} ${people.lastname}\n" +
-                        "Address: ${people.street} ${people.numHome}\n" +
-                        "Phone: ${people.phone}"
-                listPic = listPic + people.pic
 
-                people = peoples[1]
-                tv2.text = "Name: ${people.name} ${people.lastname}\n" +
-                        "Address: ${people.street} ${people.numHome}\n" +
-                        "Phone: ${people.phone}"
-                listPic = listPic + people.pic
+                var listPic = emptyList<String>()
+                val peoples = db.getInfoPeopleDao().getAllInfoPeople()
+                var people = peoples[0]
 
-                people = peoples[2]
-                tv3.text = "Name: ${people.name} ${people.lastname}\n" +
-                        "Address: ${people.street} ${people.numHome}\n" +
-                        "Phone: ${people.phone}"
-                listPic = listPic + people.pic
+                with(binding) {
+                    tv1.text = "Name: ${people.name} ${people.lastname}\n" +
+                            "Address: ${people.street} ${people.numHome}\n" +
+                            "Phone: ${people.phone}"
+                    listPic = listPic + people.pic
 
-                people = peoples[3]
-                tv4.text = "Name: ${people.name} ${people.lastname}\n" +
-                        "Address: ${people.street} ${people.numHome}\n" +
-                        "Phone: ${people.phone}"
-                listPic = listPic + people.pic
+                    people = peoples[1]
+                    tv2.text = "Name: ${people.name} ${people.lastname}\n" +
+                            "Address: ${people.street} ${people.numHome}\n" +
+                            "Phone: ${people.phone}"
+                    listPic = listPic + people.pic
 
-                people = peoples[4]
-                tv5.text = "Name: ${people.name} ${people.lastname}\n" +
-                        "Address: ${people.street} ${people.numHome}\n" +
-                        "Phone: ${people.phone}"
-                listPic = listPic + people.pic
+                    people = peoples[2]
+                    tv3.text = "Name: ${people.name} ${people.lastname}\n" +
+                            "Address: ${people.street} ${people.numHome}\n" +
+                            "Phone: ${people.phone}"
+                    listPic = listPic + people.pic
+
+                    people = peoples[3]
+                    tv4.text = "Name: ${people.name} ${people.lastname}\n" +
+                            "Address: ${people.street} ${people.numHome}\n" +
+                            "Phone: ${people.phone}"
+                    listPic = listPic + people.pic
+
+                    people = peoples[4]
+                    tv5.text = "Name: ${people.name} ${people.lastname}\n" +
+                            "Address: ${people.street} ${people.numHome}\n" +
+                            "Phone: ${people.phone}"
+                    listPic = listPic + people.pic
+                }
+                handler.post { callback.invoke(listPic) }
+            } catch (err : java.lang.IndexOutOfBoundsException) {
+                db.getInfoPeopleDao().deleteInfoPeopleData()
+                newPeople()
             }
-            handler.post {callback.invoke(listPic)}
         }
     }
 

@@ -33,8 +33,7 @@ class FullInformation : AppCompatActivity() {
         }
 
         binding.btnBack.setOnClickListener{
-            val intent = Intent(this@FullInformation, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
     }
 
