@@ -185,8 +185,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 } catch (err: java.io.FileNotFoundException) {
-                    //Toast.makeText(this, "Ошибка загрузки данных с сайта",
-                    //    Toast.LENGTH_SHORT).show()
+                    showToast("Ошибка получения данных с сайта")
                     Log.i(TAG, "FileNotFoundException")
                 }
             }
@@ -244,6 +243,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 handler.post { callback.invoke(listPic) }
             } catch (err : java.lang.IndexOutOfBoundsException) {
+                showToast("В базе данных оказалось недостаточное количество людей")
                 db.getInfoPeopleDao().deleteInfoPeopleData()
                 newPeople()
             }
@@ -265,6 +265,12 @@ class MainActivity : AppCompatActivity() {
             handler.post {
                 callback.invoke(arrayOf(name, info, people.pic))
             }
+        }
+    }
+
+    private fun showToast(text : String) {
+        runOnUiThread {
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
     }
 }
